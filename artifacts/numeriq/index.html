@@ -620,9 +620,14 @@
     border-right: 1px solid var(--border);
     text-align: right;
     user-select: none;
-    min-width: 44px;
-    overflow: hidden;
+    min-width: 48px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    white-space: pre;
+    box-sizing: border-box;
   }
+  .line-numbers::-webkit-scrollbar { display: none; width: 0; }
 
   #algo-editor {
     flex: 1;
@@ -822,8 +827,12 @@
   <div class="tab active" onclick="showSection('home')">🏠 <span>Accueil</span></div>
   <div class="tab" onclick="showSection('pointfixe')">⚙️ <span>Point Fixe</span> <span class="tab-num">01</span></div>
   <div class="tab" onclick="showSection('constantes')">π <span>Constantes</span> <span class="tab-num">02</span></div>
-  <div class="tab" onclick="showSection('aire')">▭ <span>Calcul d'Aire</span> <span class="tab-num">03</span></div>
-  <div class="tab" onclick="showSection('optim')">📈 <span>Optimisation</span> <span class="tab-num">04</span></div>
+  <div class="tab" onclick="showSection('aire')">▭ <span>Aire</span> <span class="tab-num">03</span></div>
+  <div class="tab" onclick="showSection('optim')">📈 <span>Optim.</span> <span class="tab-num">04</span></div>
+  <div class="tab" onclick="showSection('tris')">↕️ <span>Tris</span> <span class="tab-num">05</span></div>
+  <div class="tab" onclick="showSection('recherche')">🔍 <span>Recherche</span> <span class="tab-num">06</span></div>
+  <div class="tab" onclick="showSection('recursivite')">🔁 <span>Récursivité</span> <span class="tab-num">07</span></div>
+  <div class="tab" onclick="showSection('arith')">∑ <span>Arithmétique</span> <span class="tab-num">08</span></div>
   <div class="tab" onclick="showSection('editeur')" style="border-left:1px solid var(--border)">💻 <span>Éditeur Algo</span> <span class="tab-num" style="background:rgba(232,184,75,0.2);color:var(--accent)">NEW</span></div>
 </nav>
 
@@ -860,6 +869,30 @@
       <div class="home-card-icon">📈</div>
       <h3>Optimisation</h3>
       <p>Algorithme de descente de gradient et méthode ternaire pour trouver les extrema d'une fonction.</p>
+      <div class="go">Explorer →</div>
+    </div>
+    <div class="home-card" onclick="showSection('tris')" style="--c1:#e8b84b;--c2:#4caf8d">
+      <div class="home-card-icon">↕️</div>
+      <h3>Tris</h3>
+      <p>Algorithmes de tri : tri à bulles, tri par sélection, tri par insertion. Animation et comparaison des complexités.</p>
+      <div class="go">Explorer →</div>
+    </div>
+    <div class="home-card" onclick="showSection('recherche')" style="--c1:#5b8dee;--c2:#e85b8d">
+      <div class="home-card-icon">🔍</div>
+      <h3>Recherche</h3>
+      <p>Recherche séquentielle et recherche dichotomique dans un tableau, avec visualisation des étapes.</p>
+      <div class="go">Explorer →</div>
+    </div>
+    <div class="home-card" onclick="showSection('recursivite')" style="--c1:#e85b8d;--c2:#e8b84b">
+      <div class="home-card-icon">🔁</div>
+      <h3>Récursivité</h3>
+      <p>Factorielle, Fibonacci, PGCD d'Euclide, Tours de Hanoï — avec affichage de la trace d'appels.</p>
+      <div class="go">Explorer →</div>
+    </div>
+    <div class="home-card" onclick="showSection('arith')" style="--c1:#4caf8d;--c2:#5b8dee">
+      <div class="home-card-icon">∑</div>
+      <h3>Arithmétique</h3>
+      <p>PGCD/PPCM, test de primalité, décomposition en facteurs premiers, conversion entre bases (2, 8, 10, 16).</p>
       <div class="go">Explorer →</div>
     </div>
     <div class="home-card" onclick="showSection('editeur')" style="--c1:#e8b84b;--c2:#5b8dee;grid-column:1/-1">
@@ -1436,6 +1469,472 @@ f''(x*) = 0 → inflexion (indéterminé)</div>
   </div>
 </div>
 
+<!-- ═══════════════════════════ TRIS ═══════════════════════════ -->
+<div class="section" id="tris">
+  <div class="section-hero">
+    <h2>Algorithmes de <span>Tri</span></h2>
+    <div class="divider"></div>
+    <p>Trier un tableau de nombres dans l'ordre croissant. Visualisation animée et compteurs de comparaisons / permutations.</p>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSub('tr','tr-bulle',event)">🫧 Tri à Bulles</div>
+    <div class="subtab" onclick="showSub('tr','tr-select',event)">🎯 Tri par Sélection</div>
+    <div class="subtab" onclick="showSub('tr','tr-insert',event)">🪡 Tri par Insertion</div>
+    <div class="subtab" onclick="showSub('tr','tr-cmp',event)">⚖ Comparaison</div>
+  </div>
+
+  <!-- BUBBLE -->
+  <div class="subpanel active" id="tr-bulle">
+    <div class="card">
+      <div class="card-title">Tri à Bulles (Bubble Sort)</div>
+      <div class="theory">
+        On compare deux éléments adjacents et on les permute s'ils sont dans le mauvais ordre. À chaque passage, le plus grand élément « remonte » à la fin.
+        <div class="formula-block">Pour i de 0 à n-2 Faire
+  Pour j de 0 à n-i-2 Faire
+    Si T[j] > T[j+1] Alors permuter(T[j], T[j+1])
+  FinPour
+FinPour
+Complexité : O(n²)</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group" style="grid-column:1/-1">
+          <label>Tableau (séparé par des virgules)</label>
+          <input type="text" id="bul-arr" value="64, 25, 12, 22, 11, 90, 34, 7">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSort('bubble')">▶ Trier (animation)</button>
+        <button class="btn btn-ghost" onclick="randomArr('bul-arr')">🎲 Aléatoire</button>
+      </div>
+      <canvas id="bul-canvas" width="700" height="180"></canvas>
+      <div class="result-box" id="bul-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- SELECTION -->
+  <div class="subpanel" id="tr-select">
+    <div class="card">
+      <div class="card-title">Tri par Sélection (Selection Sort)</div>
+      <div class="theory">
+        À chaque étape, on cherche le plus petit élément du sous-tableau non trié et on le place à sa position finale.
+        <div class="formula-block">Pour i de 0 à n-2 Faire
+  min ← i
+  Pour j de i+1 à n-1 Faire
+    Si T[j] &lt; T[min] Alors min ← j
+  FinPour
+  permuter(T[i], T[min])
+FinPour
+Complexité : O(n²) — minimum n-1 permutations</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group" style="grid-column:1/-1">
+          <label>Tableau</label>
+          <input type="text" id="sel-arr" value="29, 10, 14, 37, 13, 18, 6, 41">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSort('selection')">▶ Trier (animation)</button>
+        <button class="btn btn-ghost" onclick="randomArr('sel-arr')">🎲 Aléatoire</button>
+      </div>
+      <canvas id="sel-canvas" width="700" height="180"></canvas>
+      <div class="result-box" id="sel-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- INSERTION -->
+  <div class="subpanel" id="tr-insert">
+    <div class="card">
+      <div class="card-title">Tri par Insertion (Insertion Sort)</div>
+      <div class="theory">
+        On insère chaque élément à sa bonne place dans la partie déjà triée. Très efficace pour les petits tableaux ou quasi-triés.
+        <div class="formula-block">Pour i de 1 à n-1 Faire
+  cle ← T[i] ; j ← i-1
+  TantQue j ≥ 0 et T[j] > cle Faire
+    T[j+1] ← T[j] ; j ← j-1
+  FinTantQue
+  T[j+1] ← cle
+FinPour
+Complexité : O(n²) au pire, O(n) au mieux</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group" style="grid-column:1/-1">
+          <label>Tableau</label>
+          <input type="text" id="ins-arr" value="5, 2, 4, 6, 1, 3, 8, 7">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSort('insertion')">▶ Trier (animation)</button>
+        <button class="btn btn-ghost" onclick="randomArr('ins-arr')">🎲 Aléatoire</button>
+      </div>
+      <canvas id="ins-canvas" width="700" height="180"></canvas>
+      <div class="result-box" id="ins-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="subpanel" id="tr-cmp">
+    <div class="card">
+      <div class="card-title">Comparaison des trois tris</div>
+      <div class="theory">
+        On exécute les trois algorithmes sur le même tableau et on compte le nombre de comparaisons et d'échanges.
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Taille du tableau</label>
+          <input type="number" id="cmp-size" value="50" min="5" max="500">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSortCompare()">▶ Comparer</button>
+      </div>
+      <div class="result-box" id="cmp-sort-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RECHERCHE ═══════════════════════════ -->
+<div class="section" id="recherche">
+  <div class="section-hero">
+    <h2>Algorithmes de <span>Recherche</span></h2>
+    <div class="divider"></div>
+    <p>Trouver la position d'une valeur dans un tableau, avec visualisation pas à pas.</p>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSub('rs','rs-seq',event)">↦ Séquentielle</div>
+    <div class="subtab" onclick="showSub('rs','rs-dicho',event)">✂️ Dichotomique</div>
+    <div class="subtab" onclick="showSub('rs','rs-cmp',event)">⚖ Comparaison</div>
+  </div>
+
+  <!-- SEQUENTIAL -->
+  <div class="subpanel active" id="rs-seq">
+    <div class="card">
+      <div class="card-title">Recherche Séquentielle (Linéaire)</div>
+      <div class="theory">
+        On parcourt le tableau du début à la fin et on s'arrête dès qu'on trouve la valeur. Fonctionne sur n'importe quel tableau (trié ou non).
+        <div class="formula-block">i ← 0
+TantQue i &lt; n et T[i] ≠ x Faire
+  i ← i + 1
+FinTantQue
+Si i &lt; n Alors trouvé en position i
+Sinon non trouvé
+Complexité : O(n)</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group" style="grid-column:span 2">
+          <label>Tableau (non trié OK)</label>
+          <input type="text" id="seq-arr" value="42, 7, 19, 23, 8, 56, 11, 4, 91, 33">
+        </div>
+        <div class="input-group">
+          <label>Valeur cherchée x</label>
+          <input type="number" id="seq-x" value="56">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSearch('linear')">▶ Rechercher</button>
+      </div>
+      <canvas id="seq-canvas" width="700" height="100"></canvas>
+      <div class="result-box" id="seq-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- DICHOTOMIC -->
+  <div class="subpanel" id="rs-dicho">
+    <div class="card">
+      <div class="card-title">Recherche Dichotomique (Binary Search)</div>
+      <div class="theory">
+        Le tableau doit être <strong>trié</strong>. On compare avec l'élément du milieu, puis on continue à gauche ou à droite.
+        <div class="formula-block">a ← 0 ; b ← n-1
+TantQue a ≤ b Faire
+  m ← (a + b) div 2
+  Si T[m] = x Alors trouvé en position m
+  Sinon Si T[m] &lt; x Alors a ← m+1
+  Sinon b ← m-1
+FinTantQue
+Complexité : O(log₂ n)</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group" style="grid-column:span 2">
+          <label>Tableau trié</label>
+          <input type="text" id="dic-arr" value="2, 5, 8, 12, 16, 23, 38, 45, 56, 67, 78, 91">
+        </div>
+        <div class="input-group">
+          <label>Valeur cherchée x</label>
+          <input type="number" id="dic-x" value="38">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSearch('binary')">▶ Rechercher</button>
+      </div>
+      <canvas id="dic-canvas" width="700" height="100"></canvas>
+      <div class="result-box" id="dic-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- COMPARE SEARCH -->
+  <div class="subpanel" id="rs-cmp">
+    <div class="card">
+      <div class="card-title">Comparaison séquentielle vs dichotomique</div>
+      <div class="theory">
+        Sur un grand tableau trié, la dichotomie est <strong>spectaculairement</strong> plus rapide.
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Taille n du tableau trié</label>
+          <input type="number" id="srch-n" value="100000" min="100">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcSearchCompare()">▶ Comparer</button>
+      </div>
+      <div class="result-box" id="srch-cmp-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ RÉCURSIVITÉ ═══════════════════════════ -->
+<div class="section" id="recursivite">
+  <div class="section-hero">
+    <h2>La <span>Récursivité</span></h2>
+    <div class="divider"></div>
+    <p>Une fonction qui s'appelle elle-même. Toujours composée d'un cas de base et d'un cas récursif.</p>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSub('rc','rc-fact',event)">n! Factorielle</div>
+    <div class="subtab" onclick="showSub('rc','rc-fib',event)">🔢 Fibonacci</div>
+    <div class="subtab" onclick="showSub('rc','rc-pgcd',event)">⚙ PGCD Euclide</div>
+    <div class="subtab" onclick="showSub('rc','rc-hanoi',event)">🗼 Tours d'Hanoï</div>
+  </div>
+
+  <!-- FACTORIAL -->
+  <div class="subpanel active" id="rc-fact">
+    <div class="card">
+      <div class="card-title">Factorielle Récursive</div>
+      <div class="theory">
+        <div class="formula-block">fact(0) = 1                ← cas de base
+fact(n) = n × fact(n-1)    ← cas récursif</div>
+        Profondeur d'appels = n. Pour n = 5 :
+        <div class="formula-block">fact(5) = 5 × fact(4)
+        = 5 × 4 × fact(3)
+        = 5 × 4 × 3 × fact(2)
+        = 5 × 4 × 3 × 2 × fact(1)
+        = 5 × 4 × 3 × 2 × 1 × fact(0)
+        = 120</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier n (max 20)</label>
+          <input type="number" id="fact-n" value="6" min="0" max="20">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcFactorial()">▶ Calculer n!</button>
+      </div>
+      <div class="result-box" id="fact-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- FIBONACCI -->
+  <div class="subpanel" id="rc-fib">
+    <div class="card">
+      <div class="card-title">Suite de Fibonacci</div>
+      <div class="theory">
+        <div class="formula-block">fib(0) = 0
+fib(1) = 1
+fib(n) = fib(n-1) + fib(n-2)</div>
+        ⚠ La version naïve récursive est en O(2ⁿ) — extrêmement lente. La version itérative (mémo) est en O(n).
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier n (récursif max 30)</label>
+          <input type="number" id="fib-n" value="15" min="0" max="40">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcFibonacci()">▶ Comparer récursif vs itératif</button>
+      </div>
+      <div class="result-box" id="fib-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- PGCD -->
+  <div class="subpanel" id="rc-pgcd">
+    <div class="card">
+      <div class="card-title">PGCD — Algorithme d'Euclide</div>
+      <div class="theory">
+        <div class="formula-block">pgcd(a, 0) = a
+pgcd(a, b) = pgcd(b, a mod b)</div>
+        Convergence très rapide : O(log min(a,b)).
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier a</label>
+          <input type="number" id="pgcd-a" value="252">
+        </div>
+        <div class="input-group">
+          <label>Entier b</label>
+          <input type="number" id="pgcd-b" value="105">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcPgcdRec()">▶ Calculer pgcd(a, b)</button>
+      </div>
+      <div class="result-box" id="pgcd-rec-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- HANOI -->
+  <div class="subpanel" id="rc-hanoi">
+    <div class="card">
+      <div class="card-title">Tours d'Hanoï</div>
+      <div class="theory">
+        Déplacer n disques de la tour A vers la tour C en utilisant la tour B, sans jamais poser un grand sur un petit.
+        <div class="formula-block">hanoi(n, A, B, C) :
+  Si n = 1 : déplacer A → C
+  Sinon :
+    hanoi(n-1, A, C, B)
+    déplacer A → C
+    hanoi(n-1, B, A, C)</div>
+        Nombre de déplacements = 2ⁿ - 1.
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Nombre de disques n (max 10)</label>
+          <input type="number" id="han-n" value="4" min="1" max="10">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcHanoi()">▶ Résoudre</button>
+      </div>
+      <div class="result-box" id="han-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ ARITHMÉTIQUE ═══════════════════════════ -->
+<div class="section" id="arith">
+  <div class="section-hero">
+    <h2>Calculs <span>Arithmétiques</span></h2>
+    <div class="divider"></div>
+    <p>PGCD, PPCM, primalité, décomposition en facteurs premiers et conversion entre bases.</p>
+  </div>
+
+  <div class="subtabs">
+    <div class="subtab active" onclick="showSub('ah','ah-pgcd',event)">⚙ PGCD / PPCM</div>
+    <div class="subtab" onclick="showSub('ah','ah-prime',event)">★ Primalité</div>
+    <div class="subtab" onclick="showSub('ah','ah-decomp',event)">⨯ Décomposition</div>
+    <div class="subtab" onclick="showSub('ah','ah-base',event)">⇄ Conversion bases</div>
+  </div>
+
+  <!-- PGCD/PPCM -->
+  <div class="subpanel active" id="ah-pgcd">
+    <div class="card">
+      <div class="card-title">PGCD et PPCM</div>
+      <div class="theory">
+        <div class="formula-block">PGCD(a,b) — Plus Grand Commun Diviseur (Euclide)
+PPCM(a,b) = (a × b) / PGCD(a,b)</div>
+        On affiche aussi les <strong>coefficients de Bézout</strong> u, v tels que a·u + b·v = pgcd(a,b).
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier a</label>
+          <input type="number" id="ar-a" value="84">
+        </div>
+        <div class="input-group">
+          <label>Entier b</label>
+          <input type="number" id="ar-b" value="60">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcPgcd()">▶ Calculer</button>
+      </div>
+      <div class="result-box" id="ar-pgcd-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- PRIME -->
+  <div class="subpanel" id="ah-prime">
+    <div class="card">
+      <div class="card-title">Test de Primalité</div>
+      <div class="theory">
+        Un entier n &gt; 1 est <strong>premier</strong> s'il n'admet que 1 et n comme diviseurs. On teste de 2 à √n.
+        <div class="formula-block">Pour i de 2 à √n Faire
+  Si n mod i = 0 Alors n n'est pas premier
+FinPour</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier n</label>
+          <input type="number" id="prime-n" value="2027">
+        </div>
+        <div class="input-group">
+          <label>Lister premiers ≤</label>
+          <input type="number" id="prime-max" value="100">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcPrime()">▶ Tester</button>
+        <button class="btn btn-ghost" onclick="calcPrimeList()">📋 Liste (Crible Ératosthène)</button>
+      </div>
+      <div class="result-box" id="prime-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- DECOMP -->
+  <div class="subpanel" id="ah-decomp">
+    <div class="card">
+      <div class="card-title">Décomposition en facteurs premiers</div>
+      <div class="theory">
+        Tout entier n ≥ 2 s'écrit de manière unique comme produit de nombres premiers.
+        <div class="formula-block">Exemple : 360 = 2³ × 3² × 5</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Entier n ≥ 2</label>
+          <input type="number" id="dec-n" value="360" min="2">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcDecomp()">▶ Décomposer</button>
+      </div>
+      <div class="result-box" id="dec-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+
+  <!-- BASE CONVERSION -->
+  <div class="subpanel" id="ah-base">
+    <div class="card">
+      <div class="card-title">Conversion entre bases</div>
+      <div class="theory">
+        Conversion entre les bases 2 (binaire), 8 (octal), 10 (décimal) et 16 (hexadécimal).
+        <div class="formula-block">Décimal → Base b : divisions successives par b, on lit les restes en sens inverse
+Base b → Décimal : Σ chiffre × bⁱ</div>
+      </div>
+      <div class="input-grid">
+        <div class="input-group">
+          <label>Nombre</label>
+          <input type="text" id="base-val" value="2026">
+        </div>
+        <div class="input-group">
+          <label>Base d'entrée</label>
+          <select id="base-from"><option>10</option><option>2</option><option>8</option><option>16</option></select>
+        </div>
+        <div class="input-group">
+          <label>Base de sortie</label>
+          <select id="base-to"><option>2</option><option>8</option><option>10</option><option selected>16</option></select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="calcBase()">▶ Convertir</button>
+        <button class="btn btn-ghost" onclick="calcBaseAll()">📋 Toutes les bases</button>
+      </div>
+      <div class="result-box" id="base-result"><span style="color:var(--text-muted)">Résultat...</span></div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════ ÉDITEUR ALGO ═══════════════════════════ -->
 <div class="section" id="editeur">
   <div class="section-hero" style="margin-bottom:20px">
@@ -1470,7 +1969,7 @@ f''(x*) = 0 → inflexion (indéterminé)</div>
         <button class="insert-btn kw" onclick="insertText('tantque  faire\n    \nfin_tantque')">tantque</button>
         <button class="insert-btn kw" onclick="insertText('pour i de 0 à n-1 faire\n    \nfin_pour')">pour</button>
         <button class="insert-btn kw" onclick="insertText('répéter\n    \njusqu\'à ')">répéter</button>
-        <button class="insert-btn fn-b" onclick="insertText('écrire("")')">écrire</button>
+        <button class="insert-btn fn-b" onclick="insertText('écrire(&quot;&quot;)')">écrire</button>
         <button class="insert-btn fn-b" onclick="insertText('lire()')">lire</button>
         <button class="insert-btn sym" onclick="insertText('←')">←</button>
         <button class="insert-btn sym" onclick="insertText('≤')">≤</button>
@@ -1491,7 +1990,7 @@ f''(x*) = 0 → inflexion (indéterminé)</div>
 // Exemple :
 variables x : entier
 début
-    écrire(&quot;Bonjour !")
+    écrire(&quot;Bonjour !&quot;)
     lire(x)
     écrire(&quot;x = &quot;, x)
 fin"></textarea>
@@ -1544,19 +2043,30 @@ fin"></textarea>
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  const sec = document.getElementById(id);
+  if (sec) sec.classList.add('active');
   const tabs = document.querySelectorAll('.tab');
-  const map = {home:0, pointfixe:1, constantes:2, aire:3, optim:4, editeur:5};
+  const map = {home:0, pointfixe:1, constantes:2, aire:3, optim:4, tris:5, recherche:6, recursivite:7, arith:8, editeur:9};
   if (tabs[map[id]]) tabs[map[id]].classList.add('active');
+  if (location.hash !== '#'+id) history.replaceState(null,'','#'+id);
   window.scrollTo(0,0);
 }
+window.addEventListener('DOMContentLoaded', () => {
+  const id = location.hash.replace('#','');
+  if (id && document.getElementById(id)) showSection(id);
+});
 
-function showSub(prefix, id) {
-  const section = document.getElementById(prefix === 'pf' ? 'pointfixe' : prefix === 'ct' ? 'constantes' : prefix === 'ar' ? 'aire' : 'optim');
+const SUB_SECTION_MAP = {
+  pf: 'pointfixe', ct: 'constantes', ar: 'aire', op: 'optim',
+  tr: 'tris', rs: 'recherche', rc: 'recursivite', ah: 'arith'
+};
+
+function showSub(prefix, id, ev) {
+  const section = document.getElementById(SUB_SECTION_MAP[prefix] || 'optim');
   section.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
   section.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.target.classList.add('active');
+  (ev && ev.target ? ev.target : (typeof event !== 'undefined' ? event.target : null))?.classList.add('active');
 }
 
 // ── SAFE EVAL ──────────────────────────────
@@ -1572,6 +2082,11 @@ function showResult(id, rows) {
   const el = document.getElementById(id);
   el.innerHTML = rows.map(r =>
     `<div class="row"><span class="label">${r[0]}</span><span class="val ${r[2]||''}">${r[1]}</span></div>`
+  ).join('');
+}
+function makeTable(rows) {
+  return rows.map(r =>
+    `<div class="row"><span class="label">${r[0]}</span><span class="val ${r[2]==='cyan'?'blue':(r[2]||'')}">${r[1]}</span></div>`
   ).join('');
 }
 
@@ -2078,6 +2593,375 @@ function calcGradient() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// ████████████████  TRIS — RECHERCHE — RÉCURSIVITÉ — ARITH  ████
+// ══════════════════════════════════════════════════════════════
+
+function parseArr(id) {
+  return document.getElementById(id).value.split(/[,;\s]+/).map(Number).filter(v => !isNaN(v));
+}
+function randomArr(id) {
+  const n = 8 + Math.floor(Math.random()*8);
+  const a = Array.from({length:n}, () => 1 + Math.floor(Math.random()*99));
+  document.getElementById(id).value = a.join(', ');
+}
+function drawBars(canvasId, arr, hi=[], sorted=[]) {
+  const c = document.getElementById(canvasId); if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  const max = Math.max(...arr, 1);
+  const w = c.width / arr.length;
+  for (let i = 0; i < arr.length; i++) {
+    const h = (arr[i]/max) * (c.height - 30);
+    let color = '#5b8dee';
+    if (sorted.includes(i)) color = '#4caf8d';
+    if (hi.includes(i)) color = '#e85b8d';
+    ctx.fillStyle = color;
+    ctx.fillRect(i*w + 2, c.height - h - 18, w - 4, h);
+    ctx.fillStyle = '#cdd9e5';
+    ctx.font = '11px Space Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(arr[i], i*w + w/2, c.height - 4);
+  }
+}
+
+async function calcSort(kind) {
+  const idMap = {bubble:['bul-arr','bul-canvas','bul-result'], selection:['sel-arr','sel-canvas','sel-result'], insertion:['ins-arr','ins-canvas','ins-result']};
+  const [inId, cvId, resId] = idMap[kind];
+  const arr = parseArr(inId); if (arr.length < 2) return;
+  const start = arr.slice();
+  const steps = []; let cmp = 0, swp = 0;
+  const a = arr.slice();
+  if (kind === 'bubble') {
+    for (let i = 0; i < a.length-1; i++) {
+      for (let j = 0; j < a.length-i-1; j++) {
+        cmp++; steps.push({arr:a.slice(), hi:[j,j+1], sorted:Array.from({length:i},(_,k)=>a.length-1-k)});
+        if (a[j] > a[j+1]) { [a[j],a[j+1]] = [a[j+1],a[j]]; swp++; steps.push({arr:a.slice(), hi:[j,j+1], sorted:Array.from({length:i},(_,k)=>a.length-1-k)}); }
+      }
+    }
+  } else if (kind === 'selection') {
+    for (let i = 0; i < a.length-1; i++) {
+      let m = i;
+      for (let j = i+1; j < a.length; j++) {
+        cmp++; steps.push({arr:a.slice(), hi:[m,j], sorted:Array.from({length:i},(_,k)=>k)});
+        if (a[j] < a[m]) m = j;
+      }
+      if (m !== i) { [a[i],a[m]] = [a[m],a[i]]; swp++; }
+      steps.push({arr:a.slice(), hi:[i], sorted:Array.from({length:i+1},(_,k)=>k)});
+    }
+  } else {
+    for (let i = 1; i < a.length; i++) {
+      let key = a[i], j = i-1;
+      while (j >= 0 && (cmp++, a[j] > key)) {
+        a[j+1] = a[j]; j--; swp++;
+        steps.push({arr:a.slice(), hi:[j+1, j+2], sorted:Array.from({length:i},(_,k)=>k)});
+      }
+      a[j+1] = key;
+      steps.push({arr:a.slice(), hi:[j+1], sorted:Array.from({length:i+1},(_,k)=>k)});
+    }
+  }
+  document.getElementById(resId).innerHTML = makeTable([
+    ['Tableau initial', start.join(', '), 'cyan'],
+    ['Tableau trié', a.join(', '), 'green'],
+    ['Comparaisons', cmp, 'cyan'],
+    ['Échanges', swp, 'cyan'],
+    ['Étapes animées', steps.length, 'cyan']
+  ]);
+  for (const s of steps) {
+    drawBars(cvId, s.arr, s.hi, s.sorted);
+    await new Promise(r => setTimeout(r, Math.max(20, 600/steps.length)));
+  }
+  drawBars(cvId, a, [], a.map((_,i)=>i));
+}
+
+function calcSortCompare() {
+  const n = +document.getElementById('cmp-size').value;
+  const base = Array.from({length:n}, () => Math.floor(Math.random()*1000));
+  const runs = {Bulles:[0,0,0], Sélection:[0,0,0], Insertion:[0,0,0]};
+  for (const [name, fn] of [
+    ['Bulles', a=>{let c=0,s=0;for(let i=0;i<a.length-1;i++)for(let j=0;j<a.length-i-1;j++){c++;if(a[j]>a[j+1]){[a[j],a[j+1]]=[a[j+1],a[j]];s++;}}return[c,s];}],
+    ['Sélection', a=>{let c=0,s=0;for(let i=0;i<a.length-1;i++){let m=i;for(let j=i+1;j<a.length;j++){c++;if(a[j]<a[m])m=j;}if(m!==i){[a[i],a[m]]=[a[m],a[i]];s++;}}return[c,s];}],
+    ['Insertion', a=>{let c=0,s=0;for(let i=1;i<a.length;i++){let k=a[i],j=i-1;while(j>=0&&(c++,a[j]>k)){a[j+1]=a[j];j--;s++;}a[j+1]=k;}return[c,s];}]
+  ]) {
+    const arr = base.slice();
+    const t0 = performance.now();
+    const [c, s] = fn(arr);
+    runs[name] = [c, s, (performance.now()-t0).toFixed(2)];
+  }
+  document.getElementById('cmp-sort-result').innerHTML =
+    '<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:2px solid var(--accent)"><th style="text-align:left;padding:6px">Algorithme</th><th>Comparaisons</th><th>Échanges</th><th>Temps (ms)</th></tr></thead><tbody>' +
+    Object.entries(runs).map(([k,v]) => `<tr><td style="padding:6px;color:var(--accent)">${k}</td><td style="text-align:center">${v[0]}</td><td style="text-align:center">${v[1]}</td><td style="text-align:center">${v[2]}</td></tr>`).join('') +
+    `</tbody></table><p style="margin-top:10px;color:var(--text-muted);font-size:13px">Tableau aléatoire de taille n = ${n}.</p>`;
+}
+
+function drawArrSearch(canvasId, arr, hi=[], range=null, found=-1) {
+  const c = document.getElementById(canvasId); if (!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  const w = Math.min(60, c.width / arr.length);
+  const totalW = w * arr.length;
+  const offX = (c.width - totalW) / 2;
+  for (let i = 0; i < arr.length; i++) {
+    const x = offX + i*w;
+    let bg = '#1a2330';
+    if (range && (i < range[0] || i > range[1])) bg = '#10161e';
+    if (hi.includes(i)) bg = '#e85b8d';
+    if (i === found) bg = '#4caf8d';
+    ctx.fillStyle = bg;
+    ctx.fillRect(x+1, 20, w-2, 50);
+    ctx.strokeStyle = '#2a3340';
+    ctx.strokeRect(x+1, 20, w-2, 50);
+    ctx.fillStyle = '#cdd9e5';
+    ctx.font = 'bold 13px Space Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(arr[i], x + w/2, 50);
+    ctx.fillStyle = '#7a8898';
+    ctx.font = '10px Space Mono, monospace';
+    ctx.fillText(i, x + w/2, 84);
+  }
+}
+
+async function calcSearch(kind) {
+  const isLin = kind === 'linear';
+  const arr = parseArr(isLin?'seq-arr':'dic-arr');
+  const x = +document.getElementById(isLin?'seq-x':'dic-x').value;
+  const cv = isLin?'seq-canvas':'dic-canvas';
+  const res = isLin?'seq-result':'dic-result';
+  if (!arr.length) return;
+  if (!isLin) arr.sort((p,q)=>p-q);
+  const steps = []; let found = -1;
+  if (isLin) {
+    for (let i = 0; i < arr.length; i++) {
+      steps.push({hi:[i], range:null});
+      if (arr[i] === x) { found = i; break; }
+    }
+  } else {
+    let a = 0, b = arr.length-1;
+    while (a <= b) {
+      const m = (a+b) >> 1;
+      steps.push({hi:[m], range:[a,b]});
+      if (arr[m] === x) { found = m; break; }
+      if (arr[m] < x) a = m+1; else b = m-1;
+    }
+  }
+  document.getElementById(res).innerHTML = makeTable([
+    ['Algorithme', isLin?'Recherche séquentielle':'Recherche dichotomique', 'cyan'],
+    ['Tableau (n)', arr.length, 'cyan'],
+    ['Cherché x', x, 'cyan'],
+    ['Position', found >= 0 ? found : 'Non trouvé', found >= 0 ? 'green' : 'red'],
+    ['Étapes', steps.length, 'cyan'],
+    ['Complexité', isLin?'O(n)':'O(log₂ n)', 'cyan']
+  ]);
+  for (const s of steps) {
+    drawArrSearch(cv, arr, s.hi, s.range, -1);
+    await new Promise(r => setTimeout(r, Math.max(150, 1500/steps.length)));
+  }
+  drawArrSearch(cv, arr, [], null, found);
+}
+
+function calcSearchCompare() {
+  const n = +document.getElementById('srch-n').value;
+  const arr = Array.from({length:n}, (_,i)=>i*2);
+  const x = arr[Math.floor(n*0.7)];
+  let lin = 0, t0 = performance.now();
+  for (let i = 0; i < arr.length; i++) { lin++; if (arr[i] === x) break; }
+  const tl = performance.now()-t0;
+  let bin = 0; t0 = performance.now();
+  let a = 0, b = arr.length-1;
+  while (a <= b) { bin++; const m=(a+b)>>1; if(arr[m]===x)break; if(arr[m]<x)a=m+1;else b=m-1; }
+  const tb = performance.now()-t0;
+  document.getElementById('srch-cmp-result').innerHTML = makeTable([
+    ['Taille n', n, 'cyan'],
+    ['Cherché x', x, 'cyan'],
+    ['— Séquentielle —', '', 'cyan'],
+    ['Itérations', lin, 'cyan'],
+    ['Temps (ms)', tl.toFixed(3), 'cyan'],
+    ['— Dichotomique —', '', 'cyan'],
+    ['Itérations', bin, 'green'],
+    ['Temps (ms)', tb.toFixed(3), 'green'],
+    ['Gain (itérations)', (lin/Math.max(1,bin)).toFixed(0)+'×', 'green']
+  ]);
+}
+
+// ── RÉCURSIVITÉ ──────────────────────────────────────────────
+function calcFactorial() {
+  const n = +document.getElementById('fact-n').value;
+  if (n < 0 || n > 20) { document.getElementById('fact-result').innerHTML = '<span style="color:var(--err)">n doit être entre 0 et 20</span>'; return; }
+  const trace = [];
+  function fact(k, depth) {
+    trace.push('  '.repeat(depth) + `fact(${k})`);
+    if (k <= 1) return 1;
+    const r = k * fact(k-1, depth+1);
+    return r;
+  }
+  const r = fact(n, 0);
+  document.getElementById('fact-result').innerHTML = makeTable([
+    ['n', n, 'cyan'],
+    ['n!', r.toLocaleString('fr-FR'), 'green'],
+    ['Profondeur d\'appels', n+1, 'cyan']
+  ]) + `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--accent)">Trace des appels récursifs</summary><pre style="background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;font-size:12px">${trace.join('\n')}</pre></details>`;
+}
+
+function calcFibonacci() {
+  const n = +document.getElementById('fib-n').value;
+  let calls = 0;
+  function fibR(k) { calls++; return k < 2 ? k : fibR(k-1) + fibR(k-2); }
+  const itStart = performance.now();
+  let a = 0, b = 1; for (let i = 0; i < n; i++) [a,b] = [b, a+b];
+  const itTime = performance.now() - itStart;
+  let recVal = '—', recTime = '—', recCalls = '—';
+  if (n <= 30) {
+    const t0 = performance.now();
+    recVal = fibR(n);
+    recTime = (performance.now()-t0).toFixed(2);
+    recCalls = calls;
+  }
+  document.getElementById('fib-result').innerHTML = makeTable([
+    ['n', n, 'cyan'],
+    ['fib(n)', a.toLocaleString('fr-FR'), 'green'],
+    ['— Itératif —', '', 'cyan'],
+    ['Temps (ms)', itTime.toFixed(3), 'green'],
+    ['Itérations', n, 'cyan'],
+    ['— Récursif naïf —', '', 'cyan'],
+    ['Appels', recCalls, n > 30 ? 'red' : 'cyan'],
+    ['Temps (ms)', recTime, n > 30 ? 'red' : 'cyan'],
+    ['Note', n > 30 ? 'Ignoré (trop lent en O(2ⁿ))' : 'OK', n > 30 ? 'red' : 'green']
+  ]);
+}
+
+function calcPgcdRec() {
+  const a0 = Math.abs(+document.getElementById('pgcd-a').value);
+  const b0 = Math.abs(+document.getElementById('pgcd-b').value);
+  const trace = [];
+  function pgcd(a, b, d) { trace.push('  '.repeat(d) + `pgcd(${a}, ${b})`); return b === 0 ? a : pgcd(b, a % b, d+1); }
+  const r = pgcd(a0, b0, 0);
+  document.getElementById('pgcd-rec-result').innerHTML = makeTable([
+    ['a', a0, 'cyan'], ['b', b0, 'cyan'],
+    ['PGCD', r, 'green'],
+    ['Profondeur', trace.length, 'cyan']
+  ]) + `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--accent)">Trace</summary><pre style="background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;font-size:12px">${trace.join('\n')}</pre></details>`;
+}
+
+function calcHanoi() {
+  const n = +document.getElementById('han-n').value;
+  if (n > 10) return;
+  const moves = [];
+  function h(k, A, B, C) {
+    if (k === 1) { moves.push(`${A} → ${C}`); return; }
+    h(k-1, A, C, B); moves.push(`${A} → ${C}`); h(k-1, B, A, C);
+  }
+  h(n, 'A', 'B', 'C');
+  const numbered = moves.map((m,i) => `${(i+1).toString().padStart(3,' ')}.  ${m}`).join('\n');
+  document.getElementById('han-result').innerHTML = makeTable([
+    ['Disques n', n, 'cyan'],
+    ['Déplacements', moves.length, 'green'],
+    ['Théorique 2ⁿ-1', Math.pow(2,n)-1, 'cyan']
+  ]) + `<details style="margin-top:10px" open><summary style="cursor:pointer;color:var(--accent)">Liste des déplacements</summary><pre style="background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;font-size:12px;max-height:300px;overflow-y:auto">${numbered}</pre></details>`;
+}
+
+// ── ARITHMÉTIQUE ─────────────────────────────────────────────
+function calcPgcd() {
+  const a0 = Math.abs(+document.getElementById('ar-a').value);
+  const b0 = Math.abs(+document.getElementById('ar-b').value);
+  const steps = [];
+  let a = a0, b = b0;
+  while (b !== 0) { const r = a % b; steps.push(`${a} = ${Math.floor(a/b)} × ${b} + ${r}`); [a,b] = [b, r]; }
+  const pgcd = a;
+  const ppcm = (a0 * b0) / pgcd;
+  // Bezout
+  let [r0,r1,u0,u1,v0,v1] = [a0,b0,1,0,0,1];
+  while (r1 !== 0) { const q = Math.floor(r0/r1); [r0,r1] = [r1, r0-q*r1]; [u0,u1] = [u1, u0-q*u1]; [v0,v1] = [v1, v0-q*v1]; }
+  document.getElementById('ar-pgcd-result').innerHTML = makeTable([
+    ['a', a0, 'cyan'], ['b', b0, 'cyan'],
+    ['PGCD(a,b)', pgcd, 'green'],
+    ['PPCM(a,b)', ppcm.toLocaleString('fr-FR'), 'green'],
+    ['Bézout u', u0, 'cyan'], ['Bézout v', v0, 'cyan'],
+    ['Vérification', `${a0}·(${u0}) + ${b0}·(${v0}) = ${a0*u0 + b0*v0}`, 'green']
+  ]) + `<details style="margin-top:10px"><summary style="cursor:pointer;color:var(--accent)">Étapes d'Euclide</summary><pre style="background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;font-size:12px">${steps.join('\n')}</pre></details>`;
+}
+
+function isPrime(n) {
+  if (n < 2) return false;
+  if (n < 4) return true;
+  if (n % 2 === 0) return false;
+  for (let i = 3; i*i <= n; i += 2) if (n % i === 0) return false;
+  return true;
+}
+function calcPrime() {
+  const n = +document.getElementById('prime-n').value;
+  const p = isPrime(n);
+  let smallest = null;
+  if (!p && n >= 2) {
+    for (let i = 2; i*i <= n; i++) if (n % i === 0) { smallest = i; break; }
+    if (!smallest) smallest = n;
+  }
+  document.getElementById('prime-result').innerHTML = makeTable([
+    ['n', n, 'cyan'],
+    ['Premier ?', p ? 'OUI ✓' : 'NON', p ? 'green' : 'red'],
+    ['Plus petit diviseur', p ? '— (premier)' : (smallest ?? '—'), 'cyan'],
+    ['Itérations testées', Math.max(1, Math.floor(Math.sqrt(n))-1), 'cyan']
+  ]);
+}
+function calcPrimeList() {
+  const N = +document.getElementById('prime-max').value;
+  if (N < 2 || N > 1000000) return;
+  const sieve = new Uint8Array(N+1);
+  const primes = [];
+  for (let i = 2; i <= N; i++) {
+    if (!sieve[i]) { primes.push(i); for (let j = i*i; j <= N; j += i) sieve[j] = 1; }
+  }
+  document.getElementById('prime-result').innerHTML = makeTable([
+    ['Limite', N, 'cyan'],
+    ['Nombre de premiers', primes.length, 'green']
+  ]) + `<details style="margin-top:10px" open><summary style="cursor:pointer;color:var(--accent)">Liste des nombres premiers ≤ ${N}</summary><pre style="background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;font-size:12px;max-height:240px;overflow-y:auto">${primes.join(', ')}</pre></details>`;
+}
+
+function calcDecomp() {
+  let n = +document.getElementById('dec-n').value;
+  if (n < 2) return;
+  const orig = n;
+  const factors = {};
+  for (let p = 2; p*p <= n; p++) {
+    while (n % p === 0) { factors[p] = (factors[p]||0) + 1; n = n/p; }
+  }
+  if (n > 1) factors[n] = (factors[n]||0) + 1;
+  const pretty = Object.entries(factors).map(([p,e]) => e === 1 ? p : `${p}<sup>${e}</sup>`).join(' × ');
+  const txt = Object.entries(factors).map(([p,e]) => e === 1 ? p : `${p}^${e}`).join(' × ');
+  const ndiv = Object.values(factors).reduce((a,e) => a*(e+1), 1);
+  document.getElementById('dec-result').innerHTML = makeTable([
+    ['n', orig, 'cyan'],
+    ['Décomposition', pretty, 'green'],
+    ['Texte', txt, 'cyan'],
+    ['Nb diviseurs', ndiv, 'cyan']
+  ]);
+}
+
+function calcBase() {
+  const v = document.getElementById('base-val').value.trim().toUpperCase();
+  const from = +document.getElementById('base-from').value;
+  const to = +document.getElementById('base-to').value;
+  const dec = parseInt(v, from);
+  if (isNaN(dec)) { document.getElementById('base-result').innerHTML = '<span style="color:var(--err)">Valeur invalide pour la base ' + from + '</span>'; return; }
+  document.getElementById('base-result').innerHTML = makeTable([
+    [`Entrée (base ${from})`, v, 'cyan'],
+    ['Décimal', dec, 'cyan'],
+    [`Sortie (base ${to})`, dec.toString(to).toUpperCase(), 'green']
+  ]);
+}
+function calcBaseAll() {
+  const v = document.getElementById('base-val').value.trim().toUpperCase();
+  const from = +document.getElementById('base-from').value;
+  const dec = parseInt(v, from);
+  if (isNaN(dec)) { document.getElementById('base-result').innerHTML = '<span style="color:var(--err)">Valeur invalide</span>'; return; }
+  document.getElementById('base-result').innerHTML = makeTable([
+    [`Entrée (base ${from})`, v, 'cyan'],
+    ['Binaire (2)', dec.toString(2), 'green'],
+    ['Octal (8)', dec.toString(8), 'green'],
+    ['Décimal (10)', dec, 'green'],
+    ['Hexadécimal (16)', dec.toString(16).toUpperCase(), 'green']
+  ]);
+}
+
+// ══════════════════════════════════════════════════════════════
 // ██████████████  ALGO TUNISIEN INTERPRETER  ██████████████████
 // ══════════════════════════════════════════════════════════════
 
@@ -2089,9 +2973,11 @@ function updateLineNumbers() {
   const lines = (editorEl.value.match(/\n/g) || []).length + 1;
   lineNumEl.textContent = Array.from({length:lines}, (_,i) => i+1).join('\n');
   document.getElementById('char-count').textContent = editorEl.value.length + ' caractères';
+  lineNumEl.scrollTop = editorEl.scrollTop;
 }
 
 editorEl.addEventListener('input', updateLineNumbers);
+editorEl.addEventListener('scroll', () => { lineNumEl.scrollTop = editorEl.scrollTop; });
 editorEl.addEventListener('keydown', e => {
   if (e.key === 'Tab') {
     e.preventDefault();
